@@ -3,7 +3,7 @@ package de.haw.vs.termin2;
 
 public class Main {
     public static void main(String[] args) {
-        Process[] ring = {new Process(84), new Process(60), new Process(36)};
+        Process[] ring = {new LocalProcess(84), new LocalProcess(60), new LocalProcess(36)};
         for (int i = 0; i < ring.length; i++) {
             ring[i].setPredecessor(ring[((i - 1) % ring.length + ring.length) % ring.length]);
             ring[i].setSuccessor(ring[(i + 1) % ring.length]);

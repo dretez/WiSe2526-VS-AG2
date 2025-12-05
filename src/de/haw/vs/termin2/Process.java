@@ -1,6 +1,6 @@
 package de.haw.vs.termin2;
 
-public class Process {
+public abstract class Process {
     private final int number;
     private int divisor;
     private Process predecessor, successor;
