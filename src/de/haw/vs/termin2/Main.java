@@ -1,6 +1,9 @@
 package de.haw.vs.termin2;
 
 
+import de.haw.vs.termin2.process.LocalProcess;
+import de.haw.vs.termin2.process.Process;
+
 public class Main {
     public static void main(String[] args) {
         Process[] ring = {new LocalProcess(84), new LocalProcess(60), new LocalProcess(36)};

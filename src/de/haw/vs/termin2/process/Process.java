@@ -1,4 +1,4 @@
-package de.haw.vs.termin2;
+package de.haw.vs.termin2.process;
 
 public abstract class Process {
     private final int number;
