@@ -1,5 +1,7 @@
 package de.haw.vs.termin2.network;
 
+import de.haw.vs.termin2.json.JSONBuilder;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -31,11 +33,12 @@ public class Pool extends Thread {
         if (this.pool.contains(socket)) return;
         String host = socket.getInetAddress().getHostAddress();
         int port = socket.getPort();
-        String json = "{\"type\":\"newConnection\";" +
-                "\"host\":\"" + host + "\";" +
-                "\"port\":" + port + "}";
+        JSONBuilder jb = new JSONBuilder();
+        jb.putString("type", "newConnection");
+        jb.putString("host", host);
+        jb.putNumber("port", port);
         for (Socket connection : this.pool) {
-            CommunicationInterface.sendRequest(connection, json);
+            CommunicationInterface.sendRequest(connection, jb.toString());
         }
         this.pool.add(socket);
     }
