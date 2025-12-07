@@ -1,5 +1,7 @@
 package de.haw.vs.termin2.process;
 
+import de.haw.vs.termin2.AlgorithmRequest;
+
 public abstract class Process {
     private final int number;
     private int divisor;
@@ -29,8 +31,8 @@ public abstract class Process {
     public void algorithm(int y) {
         if (y < divisor) {
             divisor = (divisor - 1) % y + 1;
-            predecessor.algorithm(divisor);
-            successor.algorithm(divisor);
+            new AlgorithmRequest(predecessor, divisor).start();
+            new AlgorithmRequest(successor, divisor).start();
         }
     }
 }
