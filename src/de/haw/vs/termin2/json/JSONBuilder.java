@@ -82,9 +82,10 @@ public class JSONBuilder {
         for (int i = 0; i < parts.size(); i++) {
             String part = parts.get(i).replaceFirst("\\[.*", "");
             ArrayList<String> indexes = new ArrayList<>(Arrays.asList(parts.get(i)
-                    .replaceFirst(".*\\[", "[")
+                    .replaceFirst(".*(\\[?)", "$1")
                     .replaceAll("(\\[[0-9]*]).*", "$1,")
                     .split(",")));
+            indexes.removeIf(String::isEmpty);
             for (var idx : indexes) { // Validate indexes
                 try { Integer _ = Integer.parseInt(idx); }
                 catch (NumberFormatException e) { throw new IllegalArgumentException("Expected an Integer, found \"" + idx + "\" instead"); }
@@ -120,9 +121,10 @@ public class JSONBuilder {
     private HashMap<String, Object> addPath(HashMap<String, Object> path, String keypath) {
         String part = keypath.replaceFirst("\\[.*", "");
         ArrayList<String> indexes = new ArrayList<>(Arrays.asList(keypath
-                .replaceFirst(".*\\[", "[")
+                .replaceFirst(".*(\\[?)", "$1")
                 .replaceAll("(\\[[0-9]*]).*", "$1,")
                 .split(",")));
+        indexes.removeIf(String::isEmpty);
         for (var idx : indexes) { // Validate indexes
             try { Integer _ = Integer.parseInt(idx); }
             catch (NumberFormatException e) { throw new IllegalArgumentException("Expected an Integer, found \"" + idx + "\" instead"); }
