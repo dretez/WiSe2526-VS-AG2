@@ -5,13 +5,12 @@ import java.util.Map;
 
 public class JSONReader {
     private final Object json;
-    private JSONReader(Object json) {
+
+    public JSONReader(Object json) {
         this.json = json;
     }
-
-    public static JSONReader fromString(String json) {
-        Object parsed = JSONParser.parse(json);
-        return new JSONReader(parsed);
+    public JSONReader(String json) {
+        this(JSONParser.parse(json));
     }
 
     public Object get(String keyPath) {
