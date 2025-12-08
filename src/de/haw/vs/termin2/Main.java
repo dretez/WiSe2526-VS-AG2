@@ -1,9 +1,12 @@
 package de.haw.vs.termin2;
 
 
+import de.haw.vs.termin2.network.CommunicationInterface;
 import de.haw.vs.termin2.network.Pool;
 import de.haw.vs.termin2.process.LocalProcess;
 import de.haw.vs.termin2.process.Process;
+import de.haw.vs.termin2.process.RemoteProcess;
+
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -19,34 +22,41 @@ public class Main {
         Pool pool;
         try {
             pool = new Pool(DEFAULT_PORT);
+            pool.start();
         } catch (IOException e) {
             System.err.println("Failed to start pool");
             return;
         }
-
-        /* Connect to all other servers (create a pool) */
-        // pool.add("localhost", DEFAULT_PORT);
-
         /* Initialize numbers */
         List<Integer> numbers = Arrays.asList(108, 7, 60, 36);
-
         /* Try to evenly distribute numbers by all servers in the pool.
          * Keep any remaining numbers */
-
-        /* Setup timeout */
-
-        /* Start algorithm */
-
-        /*
-        Process[] ring = {new LocalProcess(84), new LocalProcess(60), new LocalProcess(36)};
-        for (int i = 0; i < ring.length; i++) {
-            ring[i].setPredecessor(ring[((i - 1) % ring.length + ring.length) % ring.length]);
-            ring[i].setSuccessor(ring[(i + 1) % ring.length]);
+        System.out.println("Waiting 5 seconds for remote clients to connect...");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-        ring[0].algorithm(ring[1].getNumber());
-        System.out.println(ring[0].getNumber() + " " + ring[0].getDivisor());
-        System.out.println(ring[1].getNumber() + " " + ring[1].getDivisor());
-        System.out.println(ring[2].getNumber() + " " + ring[2].getDivisor());
-         */
+
+        List<Socket> sockets = pool.pool();
+        int remoteCount = sockets.size();
+
+        System.out.println("Connected clients: " + remoteCount);
+
+
+        Process[] processes = new Process[numbers.size()];
+
+        for (int i = 0; i < numbers.size(); i++) {
+
+            if (remoteCount == 0) {
+                processes[i] = new LocalProcess(numbers.get(i));
+                continue;
+            }
+
+            Socket assignedSocket = sockets.get(i % remoteCount);
+            processes[i] = new RemoteProcess(assignedSocket, numbers.get(i));
+        }
+
+
     }
 }
