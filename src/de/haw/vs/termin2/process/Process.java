@@ -7,6 +7,8 @@ public abstract class Process {
     private Process predecessor, successor;
     private static int nextId = 0;
 
+    public abstract void algorithm(int y);
+
     public Process(int value) {
         this.number = value;
         this.divisor = value;
@@ -17,12 +19,24 @@ public abstract class Process {
         return id;
     }
 
-    public int getNumber() {
+    public int number() {
         return number;
     }
 
-    public int getDivisor() {
+    public int divisor() {
         return divisor;
+    }
+
+    protected Process predecessor() {
+        return predecessor;
+    }
+
+    protected Process successor() {
+        return successor;
+    }
+
+    protected void setDivisor(int value) {
+        divisor = value;
     }
 
     public void setPredecessor(Process predecessor) {
@@ -31,28 +45,5 @@ public abstract class Process {
 
     public void setSuccessor(Process successor) {
         this.successor = successor;
-    }
-
-    public void algorithm(int y) {
-        if (y < divisor) {
-            divisor = (divisor - 1) % y + 1;
-            new AlgorithmRequest(predecessor, divisor).start();
-            new AlgorithmRequest(successor, divisor).start();
-        }
-    }
-
-    static class AlgorithmRequest extends Thread {
-        private final Process process;
-        private final int num;
-
-        public AlgorithmRequest(Process process, int num) {
-            this.process = process;
-            this.num = num;
-        }
-
-        @Override
-        public void run() {
-            this.process.algorithm(num);
-        }
     }
 }
