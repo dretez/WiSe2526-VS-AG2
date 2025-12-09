@@ -40,7 +40,7 @@ public class Main {
 
         List<Socket> sockets = pool.pool();
         int remoteCount = sockets.size();
-        int procPerSock = Math.max(1, (sockets.size() + 1) / numbers.size());
+        int procPerSock = Math.max(1, numbers.size() / (sockets.size() + 1));
 
         System.out.println("Connected clients: " + remoteCount);
 
