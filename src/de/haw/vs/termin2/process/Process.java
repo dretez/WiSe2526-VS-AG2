@@ -15,6 +15,8 @@ public abstract class Process {
         this.divisor = value;
         this.id = id;
         this.stop = false;
+        this.predecessor = null;
+        this.successor = null;
     }
     public Process(int value) {
         this(value, nextId++);
@@ -60,6 +62,11 @@ public abstract class Process {
         this.successor = successor;
     }
 
+    @Override
+    public String toString() {
+        return this.number + ":" + this.divisor;
+    }
+
     public void start() {
         new AlgorithmRequest(predecessor, number).start();
         new AlgorithmRequest(successor, number).start();
@@ -76,6 +83,7 @@ public abstract class Process {
 
         @Override
         public void run() {
+            System.out.println("What?");
             this.process.algorithm(num);
         }
     }

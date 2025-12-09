@@ -28,6 +28,10 @@ public class RemoteProcess extends Process {
         jb.putNumber("successor", successor().id());
         try {
             CommunicationInterface.sendRequest(this.socket, jb.toString());
+            String json = CommunicationInterface.awaitReply(this.socket);
+            int divisor = (int) new JSONReader(json).get("divisor");
+            new AlgorithmRequest(predecessor(), divisor).start();
+            new AlgorithmRequest(successor(), divisor).start();
         } catch (Exception e) {
             System.err.println("Couldn't send request to remote process");
         }

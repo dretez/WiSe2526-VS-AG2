@@ -33,5 +33,9 @@ public class Main {
         }
 
         client.stop();
+        try {
+            server.stop();
+        } catch (IOException _) {
+        }
     }
 }

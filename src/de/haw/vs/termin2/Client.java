@@ -56,6 +56,9 @@ public class Client {
     }
 
     public void stop() {
+        for (var proc : procList) {
+            proc.stop();
+        }
         JSONBuilder jb = new JSONBuilder();
         jb.putString("type", "endAlgorithm");
         for (var sock : runningSockets) {

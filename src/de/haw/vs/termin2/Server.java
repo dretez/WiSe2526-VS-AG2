@@ -4,9 +4,8 @@ import de.haw.vs.termin2.json.JSONBuilder;
 import de.haw.vs.termin2.json.JSONReader;
 import de.haw.vs.termin2.network.CommunicationInterface;
 import de.haw.vs.termin2.network.Pool;
-import de.haw.vs.termin2.process.LocalProcess;
 import de.haw.vs.termin2.process.Process;
-import de.haw.vs.termin2.process.RemoteProcess;
+import de.haw.vs.termin2.process.ServerProcess;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -106,10 +105,8 @@ public class Server implements Runnable {
         private void createProcess(JSONReader json) {
             int number = (Integer) json.get("number");
             int id = (Integer) json.get("id");
-            LocalProcess local = new LocalProcess(number, id);
-            local.setPredecessor(new RemoteProcess(this.clientSocket, 0, (Integer) json.get("predecessor")));
-            local.setSuccessor(new RemoteProcess(this.clientSocket, 0, (Integer) json.get("successor")));
-            this.processes.put(id, local);
+            ServerProcess process = new ServerProcess(clientSocket, number, id);
+            this.processes.put(id, process);
         }
 
         private void handleAlgorithm(JSONReader json) {
