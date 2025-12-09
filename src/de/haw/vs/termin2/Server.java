@@ -33,6 +33,7 @@ public class Server {
 
     public void stop() throws IOException {
         this.serverSocket.close();
+        this.pool.close();
     }
 
     public static void main(String[] args) {

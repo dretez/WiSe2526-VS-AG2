@@ -3,26 +3,19 @@ package de.haw.vs.termin2.network;
 import de.haw.vs.termin2.json.JSONBuilder;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Pool extends Thread {
-    private final ServerSocket serverSocket;
+public class Pool {
     private final List<Socket> pool;
 
-    public Pool(int port) throws IOException {
-        this.serverSocket = new ServerSocket(port);
+    public Pool() {
         this.pool = new ArrayList<>();
     }
 
     public int size() {
         return pool.size();
-    }
-
-    public ServerSocket serverSocket() {
-        return serverSocket;
     }
 
     public List<Socket> pool() {
@@ -43,25 +36,23 @@ public class Pool extends Thread {
         this.pool.add(socket);
     }
 
+    public void remove(Socket socket) {
+        this.pool.remove(socket);
+    }
+
     public void add(String host, int port) throws IOException {
         Socket socket = new Socket(host, port);
         this.add(socket);
     }
 
-    public void close() throws IOException {
-        this.serverSocket.close();
+    public void close() {
         for (Socket socket : pool) {
-            socket.close();
-        }
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            try (Socket socket = this.serverSocket.accept()) {
-                this.add(socket);
+            try {
+                socket.close();
             } catch (IOException e) {
-                break;
+                System.err.println("Couldn't close client socket at " +
+                        socket.getInetAddress().getHostAddress()+":" +
+                        socket.getPort());
             }
         }
     }
