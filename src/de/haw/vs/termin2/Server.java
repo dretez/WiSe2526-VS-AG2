@@ -1,5 +1,6 @@
 package de.haw.vs.termin2;
 
+import de.haw.vs.termin2.json.JSONBuilder;
 import de.haw.vs.termin2.json.JSONReader;
 import de.haw.vs.termin2.network.CommunicationInterface;
 import de.haw.vs.termin2.network.Pool;
@@ -91,6 +92,8 @@ public class Server implements Runnable {
                 case "createProcess" -> createProcess(json);
                 case "algorithmCall" -> handleAlgorithm(json);
                 case "endAlgorithm" -> handleEndAlgorithm(json);
+                case "getDivisor" -> handleGetDivisor(json);
+                case "newConnection" -> handleNewConnection(json);
                 default -> {
                     if (json.get("type") == null)
                         throw new IllegalArgumentException("Message doesn't specify type");
@@ -118,6 +121,23 @@ public class Server implements Runnable {
         private void handleEndAlgorithm(JSONReader json) {
             for (var i : processes.entrySet()) {
                 i.getValue().stop();
+            }
+        }
+
+        private void handleGetDivisor(JSONReader json) {
+            int id = (int) json.get("id");
+            int divisor = processes.get(id).divisor();
+            JSONBuilder jb = new JSONBuilder();
+            jb.putString("type", "returnDivisor");
+            jb.putNumber("divisor", divisor);
+        }
+
+        private void handleNewConnection(JSONReader json) {
+            String host = (String) json.get("host");
+            int port = (int) json.get("port");
+            try {
+                pool.add(host, port);
+            } catch (IOException _) {
             }
         }
     }

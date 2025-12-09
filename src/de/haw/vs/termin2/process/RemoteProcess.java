@@ -12,9 +12,17 @@ public class RemoteProcess extends Process {
     public RemoteProcess(Socket socket, int value) {
         super(value);
         this.socket = socket;
+    }
+
+    public RemoteProcess(Socket socket, int value, int id) {
+        super(value, id);
+        this.socket = socket;
+    }
+
+    public void sendProcess() {
         JSONBuilder jb = new JSONBuilder();
         jb.putString("type", "createProcess");
-        jb.putNumber("number", value);
+        jb.putNumber("number", number());
         jb.putNumber("id", this.id());
         jb.putNumber("predecessor", predecessor().id());
         jb.putNumber("successor", successor().id());
@@ -23,11 +31,6 @@ public class RemoteProcess extends Process {
         } catch (Exception e) {
             System.err.println("Couldn't send request to remote process");
         }
-    }
-
-    public RemoteProcess(Socket socket, int value, int id) {
-        super(value, id);
-        this.socket = socket;
     }
 
     @Override

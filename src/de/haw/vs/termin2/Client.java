@@ -23,7 +23,7 @@ public class Client {
     }
 
     public void run() {
-        List<Integer> numbers = Arrays.asList(108, 7, 60, 36);
+        ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(108, 7, 60, 36));
         List<Socket> currentPool = pool.pool();
         int remoteCount = currentPool.size();
         int procPerSock = Math.max(1, numbers.size() / (currentPool.size() + 1));
@@ -48,6 +48,8 @@ public class Client {
             Process proc = procList.get(i);
             proc.setPredecessor(i == 0 ? procList.getLast() : procList.get(i-1));
             proc.setSuccessor(i+1 == procList.size() ? procList.getFirst() : procList.get(i+1));
+            if (proc instanceof RemoteProcess)
+                ((RemoteProcess) proc).sendProcess();
         }
 
         procList.getLast().start();
