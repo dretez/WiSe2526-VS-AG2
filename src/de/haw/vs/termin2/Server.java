@@ -35,10 +35,6 @@ public class Server implements Runnable {
     public static void main(String[] args) {
         Server server = new Server(DEFAULT_PORT);
         new Thread(server).start();
-        try {
-            server.stop();
-        } catch (IOException _) {
-        }
     }
 
     @Override
