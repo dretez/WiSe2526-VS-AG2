@@ -40,23 +40,25 @@ public class Main {
 
         List<Socket> sockets = pool.pool();
         int remoteCount = sockets.size();
+        int procPerSock = Math.max(1, (sockets.size() + 1) / numbers.size());
 
         System.out.println("Connected clients: " + remoteCount);
 
+        ArrayList<Process> procList = new ArrayList<>();
 
-        Process[] processes = new Process[numbers.size()];
-
-        for (int i = 0; i < numbers.size(); i++) {
-
-            if (remoteCount == 0) {
-                processes[i] = new LocalProcess(numbers.get(i));
-                continue;
+        for (Socket sock: sockets) {
+            for (int i = 0; i < procPerSock && numbers.size() > 1; i++) {
+                procList.add(new RemoteProcess(sock, numbers.removeFirst()));
             }
-
-            Socket assignedSocket = sockets.get(i % remoteCount);
-            processes[i] = new RemoteProcess(assignedSocket, numbers.get(i));
+            if (numbers.size() == 1) break;
         }
-
-
+        for (var num : numbers) {
+            procList.add(new LocalProcess(num));
+        }
+        for (int i = 0; i < procList.size(); i++) {
+            Process proc = procList.get(i);
+            proc.setPredecessor(i == 0 ? procList.getLast() : procList.get(i-1));
+            proc.setSuccessor(i+1 == procList.size() ? procList.getFirst() : procList.get(i+1));
+        }
     }
 }

@@ -26,7 +26,7 @@ public class Pool extends Thread {
     }
 
     public List<Socket> pool() {
-        return pool;
+        return List.copyOf(pool);
     }
 
     public void add(Socket socket) throws IOException {
