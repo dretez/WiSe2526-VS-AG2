@@ -7,10 +7,10 @@ public class Main {
     public static void main(String[] args) {
         int DEFAULT_PORT = 3000;
 
-        Server server = new Server();
+        Server server = new Server(DEFAULT_PORT);
         try {
-            server.start(DEFAULT_PORT);
-            server.pool().add("localhost", DEFAULT_PORT);
+            server.pool().add("100.74.192.93", DEFAULT_PORT);
+            new Thread(server).start();
         } catch (IOException e) {
             System.err.println("Failed to initialize server");
             return;

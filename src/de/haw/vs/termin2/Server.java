@@ -12,23 +12,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 
-public class Server {
+public class Server implements Runnable {
     private static final int DEFAULT_PORT = 3000;
     private ServerSocket serverSocket;
     private final Pool pool;
+    private int port;
 
-    public Server() {
+    public Server(int port) {
         this.pool = new Pool();
+        this.port = port;
     }
 
     public Pool pool() {
         return this.pool;
-    }
-
-    public void start(int port) throws IOException {
-        this.serverSocket = new ServerSocket(port);
-        while (true)
-            new ClientHandler(serverSocket.accept(), pool).start();
     }
 
     public void stop() throws IOException {
@@ -37,16 +33,28 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        Server server = new Server();
+        Server server = new Server(DEFAULT_PORT);
+        new Thread(server).start();
         try {
-            server.start(DEFAULT_PORT);
+            server.stop();
+        } catch (IOException _) {
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+            this.serverSocket = new ServerSocket(port);
         } catch (IOException e) {
             System.err.println(e.getMessage());
             return;
         }
-        try {
-            server.stop();
-        } catch (IOException _) {
+        while (true) {
+            try {
+                new ClientHandler(serverSocket.accept(), pool).start();
+            } catch (IOException e) {
+                break;
+            }
         }
     }
 
