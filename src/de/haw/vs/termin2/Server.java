@@ -130,6 +130,10 @@ public class Server implements Runnable {
             JSONBuilder jb = new JSONBuilder();
             jb.putString("type", "returnDivisor");
             jb.putNumber("divisor", divisor);
+            try {
+                CommunicationInterface.sendRequest(clientSocket, jb.toString());
+            } catch (IOException _) {
+            }
         }
 
         private void handleNewConnection(JSONReader json) {
