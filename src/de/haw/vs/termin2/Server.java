@@ -16,7 +16,7 @@ public class Server implements Runnable {
     private static final int DEFAULT_PORT = 3000;
     private ServerSocket serverSocket;
     private final Pool pool;
-    private int port;
+    private final int port;
 
     public Server(int port) {
         this.pool = new Pool();
@@ -105,14 +105,23 @@ public class Server implements Runnable {
         private void createProcess(JSONReader json) {
             int number = (Integer) json.get("number");
             int id = (Integer) json.get("id");
-            ServerProcess process = new ServerProcess(clientSocket, number, id);
+            ServerProcess process = new ServerProcess(number, id);
             this.processes.put(id, process);
         }
 
         private void handleAlgorithm(JSONReader json) {
             int id = (Integer) json.get("id");
             int y = (Integer) json.get("y");
-            processes.get(id).algorithm(y);
+            Process proc = processes.get(id);
+            proc.algorithm(y);
+            int divisor = proc.divisor();
+            JSONBuilder jb = new JSONBuilder();
+            jb.putString("type", "returnDivisor");
+            jb.putNumber("divisor", divisor);
+            try {
+                CommunicationInterface.sendRequest(clientSocket, jb.toString());
+            } catch (IOException _) {
+            }
         }
 
         private void handleEndAlgorithm(JSONReader json) {
