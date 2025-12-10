@@ -1,28 +1,23 @@
 package de.haw.vs.termin2;
 
 
+import de.haw.vs.termin2.network.Pool;
+
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
         int DEFAULT_PORT = 3000;
 
-        Server server = new Server(DEFAULT_PORT);
+        Pool pool = new Pool();
         try {
-            server.pool().add("100.74.192.93", DEFAULT_PORT);
-            new Thread(server).start();
+            pool.add("100.74.192.93", DEFAULT_PORT);
         } catch (IOException e) {
             System.err.println("Failed to initialize server");
             return;
         }
 
-        System.out.println("Waiting 5 seconds for remote clients to connect...");
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException _) {
-        }
-
-        Client client = new Client(server.pool());
+        Client client = new Client(pool);
 
         client.run();
 
@@ -32,10 +27,7 @@ public class Main {
         } catch (InterruptedException _) {
         }
 
+        System.out.println("Stopping");
         client.stop();
-        try {
-            server.stop();
-        } catch (IOException _) {
-        }
     }
 }
