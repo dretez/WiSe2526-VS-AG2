@@ -7,7 +7,7 @@ import de.haw.vs.termin2.network.CommunicationInterface;
 import java.net.Socket;
 
 public class RemoteProcess extends Process {
-    Socket socket;
+    private final Socket socket;
 
     public RemoteProcess(Socket socket, int value) {
         super(value);
@@ -24,17 +24,11 @@ public class RemoteProcess extends Process {
         jb.putString("type", "createProcess");
         jb.putNumber("number", number());
         jb.putNumber("id", this.id());
-        jb.putNumber("predecessor", predecessor().id());
-        jb.putNumber("successor", successor().id());
-        try {
-            CommunicationInterface.sendRequest(this.socket, jb.toString());
-            String json = CommunicationInterface.awaitReply(this.socket);
-            int divisor = (int) new JSONReader(json).get("divisor");
-            new AlgorithmRequest(predecessor(), divisor).start();
-            new AlgorithmRequest(successor(), divisor).start();
-        } catch (Exception e) {
-            System.err.println("Couldn't send request to remote process");
-        }
+            try {
+                CommunicationInterface.sendRequest(this.socket, jb.toString());
+            } catch (Exception e) {
+                System.err.println("Couldn't send request to remote process: " + e.getMessage());
+            }
     }
 
     @Override
@@ -42,13 +36,12 @@ public class RemoteProcess extends Process {
         JSONBuilder jb = new JSONBuilder();
         jb.putString("type", "getDivisor");
         jb.putNumber("id", this.id());
-        try {
-            CommunicationInterface.sendRequest(this.socket, jb.toString());
-            String json = CommunicationInterface.awaitReply(this.socket);
-            return (int) new JSONReader(json).get("divisor");
-        } catch (Exception e) {
-            System.err.println("Couldn't send request to remote process");
-        }
+            try {
+                String json = CommunicationInterface.sendAndAwait(this.socket, jb.toString());
+                return (int) new JSONReader(json).get("divisor");
+            } catch (Exception e) {
+                System.err.println("Couldn't send request to remote process: " + e.getMessage());
+            }
         return -1;
     }
 
@@ -60,9 +53,12 @@ public class RemoteProcess extends Process {
         jb.putNumber("y", y);
         jb.putNumber("id", this.id());
         try {
-            CommunicationInterface.sendRequest(this.socket, jb.toString());
+            String json = CommunicationInterface.sendAndAwait(this.socket, jb.toString());
+            int divisor = (int) new JSONReader(json).get("divisor");
+            new AlgorithmRequest(predecessor(), divisor).start();
+            new AlgorithmRequest(successor(), divisor).start();
         } catch (Exception e) {
-            System.err.println("Couldn't send request to remote process");
+            System.err.println("Couldn't send request to remote process: " + e.getMessage());
         }
     }
 }

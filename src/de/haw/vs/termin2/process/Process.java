@@ -83,7 +83,6 @@ public abstract class Process {
 
         @Override
         public void run() {
-            System.out.println("What?");
             this.process.algorithm(num);
         }
     }
